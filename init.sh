@@ -12,7 +12,9 @@ setup_one() {
 
 setup_all(){
     ( setup_one mail-backend || echo "cant reinstall mail-backend" ) &&
-    ( setup_one auth-backend || echo "cant reinstall auth-backend" ) 
+    ( setup_one auth-backend || echo "cant reinstall auth-backend" ) &&
+    ( setup_one payment-backend || echo "cant reinstall payment-backend" ) 
+
 }
 case $1 in
     one) setup_one $2;;

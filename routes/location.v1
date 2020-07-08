@@ -5,3 +5,10 @@ location /v1/users {
     proxy_set_header Connection "upgrade";
     proxy_set_header   Host $host;
 }
+location /v1/payment {
+    proxy_pass http://payment-backend;
+    proxy_http_version 1.1;
+    proxy_set_header   Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header   Host $host;
+}

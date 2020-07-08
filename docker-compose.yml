@@ -41,7 +41,13 @@ services:
         networks:
             default:
                 ipv4_address: 172.2.60.4
-
+     
+    mail:
+        image: bytemark/smtp
+        restart: always
+        networks:
+            default:
+                ipv4_address: 172.2.59.200
 
     ########
     # Auth #
@@ -68,6 +74,18 @@ services:
         networks:
             default:
                 ipv4_address: 172.2.80.5
+    
+    payment-backend:
+        image: vivaconagua/payment-backend:latest
+        build: ./repos/payment-backend
+        container_name: payment-backend
+        restart: unless-stopped
+        volumes:
+            - ./config/payment-backend/config.yml:/go/src/payment-backend/config/config.yml
+        networks:
+            default:
+                ipv4_address: 172.2.60.6
+
 
 
 networks:
