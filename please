@@ -1,0 +1,49 @@
+#!/bin/bash
+
+####
+# Deployment scripts for stage
+##
+
+##
+# Pull a specific repository, update the corresponding docker
+##
+update_docker() {
+    cd repos/${1} && 
+    git pull && 
+	cd ../../ && 
+    docker-compose up -d --build $1;
+}
+
+##
+# Remove docker and restart it
+##
+reup_docker(){
+  docker-compose rm -s $1 && docker-compose up -d $1;
+}
+
+##
+# Restart docker
+##
+restart_docker(){
+  docker-compose restart $1;
+}
+
+##
+# Print Api help
+##
+help(){
+    echo "Usage: ./please <command> <serviceName / version>"
+    echo " update <serviceName>                  # pull the 'develop' branches, build and setup docker and push docker into 'develop'"
+    echo " restart <serviceName>                 # delete and set up service"
+	echo " reup <serviceName>                    # remove and restart docker"
+}
+
+##
+# Main
+##
+case $1 in
+  update) update_docker $2;;
+  restart) restart_docker $2;;
+  reup) reup_docker $2 $3;;
+  *) help
+esac
