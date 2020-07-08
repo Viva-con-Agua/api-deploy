@@ -7,6 +7,22 @@
 ##
 # Pull a specific repository, update the corresponding docker
 ##
+branch="develop"
+
+setup_one() {
+    cd repos &&
+    git clone -b ${branch} https://github.com/Viva-con-Agua/${1}.git && 
+    mkdir -p ../config/${1} &&
+    cp -r ${1}/config/* ../config/${1}/
+    cd ..
+}
+
+setup_all(){
+    ( setup_one mail-backend || echo "cant reinstall mail-backend" ) &&
+    ( setup_one auth-backend || echo "cant reinstall auth-backend" ) &&
+    ( setup_one payment-backend || echo "cant reinstall payment-backend" ) 
+
+}
 update_docker() {
     cd repos/${1} && 
     git pull && 
@@ -28,11 +44,14 @@ restart_docker(){
   docker-compose restart $1;
 }
 
+
 ##
 # Print Api help
 ##
 help(){
     echo "Usage: ./please <command> <serviceName / version>"
+    echo " setup <serviceName>                   # setup service"
+    echo " setup_all                             # setup all services"
     echo " update <serviceName>                  # pull the 'develop' branches, build and setup docker and push docker into 'develop'"
     echo " restart <serviceName>                 # delete and set up service"
 	echo " reup <serviceName>                    # remove and restart docker"
@@ -42,6 +61,8 @@ help(){
 # Main
 ##
 case $1 in
+  setup) setup_one $2;;
+  setup_all) setup_all;;
   update) update_docker $2;;
   restart) restart_docker $2;;
   reup) reup_docker $2 $3;;
