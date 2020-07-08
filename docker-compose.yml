@@ -7,29 +7,27 @@ services:
         container_name: nginx-api
         restart: unless-stopped
         volumes:
-            - ./routes/nginx-api/:/etc/nginx/conf.d/
-        ports:
-            - 80:80
+            - ./routes/:/etc/nginx/conf.d/
         networks:
             default:
                 ipv4_address: 172.2.60.1
   ################
   # Architecture #
   ################
-    nats:
+    nats-api:
         image: nats
-        container_name: nats
+        container_name: nats-api
         restart: unless-stopped
         networks:
-            pool-network:
+            default:
                 ipv4_address: 172.2.60.2
 
-    redis:
+    redis-api:
         image: redis
-        container_name: redis
+        container_name: redis-api
         restart: unless-stopped
         networks:
-            pool-network:
+            default:
                 ipv4_address: 172.2.60.3
 
     # mail
@@ -39,9 +37,9 @@ services:
         container_name: mail-backend
         restart: unless-stopped
         volumes:
-            - ./config/mail-backend/config.yml:/go/src/mail-backend/config.yml
+            - ./config/mail-backend/config.yml:/go/src/mail-backend/config/config.yml
         networks:
-            pool-network:
+            default:
                 ipv4_address: 172.2.60.4
 
 
@@ -55,66 +53,21 @@ services:
         container_name: auth-backend
         restart: unless-stopped
         volumes:
-            - ./config/auth-backend/config.yml:/go/src/auth-backend/config.yml
+            - ./config/auth-backend/config.yml:/go/src/auth-backend/config/config.yml
         networks:
-            pool-network:
+            default:
                 ipv4_address: 172.2.60.5
     auth-db:
         image: mysql
         container_name: auth-db
         restart: unless-stopped
-        environment:
-            - MYSQL_DATABASE=auth 
-            - MYSQL_USER=auth
-            - MYSQL_PASSWORD=auth 
-            - MYSQL_ROOT_PASSWORD=yes 
+        env_file: ./config/auth-backend/database.env
         volumes:
             - ./volumes/auth-db/mysql/:/var/lib/mysql/
-            - ./repos/auth-backend/db/:/docker-entrypoint-initdb.d/
+            - ./repos/auth-backend/config/db/:/docker-entrypoint-initdb.d/
         networks:
-            pool-network:
+            default:
                 ipv4_address: 172.2.80.5
-    #############
-    # Dispenser #
-    #############
-
-    dispenser-backend:
-        image: vivaconagua/dispenser-backend:latest
-        build: ./repos/dispenser-backend
-        container_name: dispenser-backend
-        restart: unless-stopped
-        networks:
-            pool-network:
-                ipv4_address: 172.2.60.6
-
-    dispenser-db:
-        image: mongo
-        container_name: dispenser-database
-        restart: always
-        volumes: 
-            - ./volumes/dispenser-db/mongodb/:/data/db/
-        networks:
-            pool-network:
-                ipv4_address: 172.2.80.6
-
-    ##
-    # Payment
-    ##
-    
-    payment-backend:
-        image: vivaconagua/payment-backend:latest
-        build: ./repos/payment-backend
-        container_name: payment-backend
-        restart: unless-stopped
-        volumes:
-            - ./config/payment-backend/config.yml:/go/src/payment-backend/config.yml
-        networks:
-            pool-network:
-                ipv4_address: 172.3.60.7
-
-
-
-
 
 
 networks:
