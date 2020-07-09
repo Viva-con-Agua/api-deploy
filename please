@@ -7,14 +7,38 @@
 ##
 # Pull a specific repository, update the corresponding docker
 ##
-branch="develop"
+if [ -f ".env" ]; then
+    source .env
+else
+    branch="develop"
+    editor="nvim"
+fi
 
-setup_one() {
+
+install_docker() {
     cd repos &&
     git clone -b ${branch} https://github.com/Viva-con-Agua/${1}.git && 
     mkdir -p ../config/${1} &&
     cp -r ${1}/config/* ../config/${1}/
-    cd ..
+    cd .. &&
+    ${editor} docker-compose.yml &&
+    ${editor} routes/location.${2} &&
+    ${editor} routes/default.upstream &&
+    if docker-compose config --services | grep -q '${1}_db'; then
+        ${editor} config/${1}/config.yml &&
+        ${editor} config/${1}/database.env
+    else
+        ${editor} config/${1}/config.yml 
+    fi
+}
+
+setup_docker() {
+    if docker-compose config --services | grep -q '${1}_db'; then
+        docker-compose up -d --build ${1}-db
+        docker-compose up -d --build ${1}
+    else
+        docker-compose up -d --build ${1}
+    fi
 }
 
 setup_all(){
@@ -50,6 +74,7 @@ restart_docker(){
 ##
 help(){
     echo "Usage: ./please <command> <serviceName / version>"
+    echo " install <serviceName> <apiVersion>    # install backend docker"
     echo " setup <serviceName>                   # setup service"
     echo " setup_all                             # setup all services"
     echo " update <serviceName>                  # pull the 'develop' branches, build and setup docker and push docker into 'develop'"
@@ -61,7 +86,8 @@ help(){
 # Main
 ##
 case $1 in
-  setup) setup_one $2;;
+    install) install_docker $2 $3;;
+  setup) setup_docker $2;;
   setup_all) setup_all;;
   update) update_docker $2;;
   restart) restart_docker $2;;

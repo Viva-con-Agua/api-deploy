@@ -63,7 +63,7 @@ services:
         networks:
             default:
                 ipv4_address: 172.2.60.5
-    auth-db:
+    auth-backend-db:
         image: mysql
         container_name: auth-db
         restart: unless-stopped
