@@ -65,7 +65,7 @@ services:
                 ipv4_address: 172.2.60.5
     auth-backend-db:
         image: mysql
-        container_name: auth-db
+        container_name: auth-backend-db
         restart: unless-stopped
         env_file: ./config/auth-backend/database.env
         volumes:
