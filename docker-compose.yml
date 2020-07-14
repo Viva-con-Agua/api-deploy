@@ -69,7 +69,7 @@ services:
         restart: unless-stopped
         env_file: ./config/auth-backend/database.env
         volumes:
-            - ./volumes/auth-db/mysql/:/var/lib/mysql/
+            - ./volumes/auth-backend-db/mysql/:/var/lib/mysql/
             - ./repos/auth-backend/config/db/:/docker-entrypoint-initdb.d/
         networks:
             default:
