@@ -41,6 +41,18 @@ services:
         networks:
             default:
                 ipv4_address: 172.2.60.4
+ 
+    mail-backend-db:
+        image: mysql
+        container_name: mail-backend-db
+        restart: unless-stopped
+        env_file: ./config/mail-backend/database.env
+        volumes:
+            - ./volumes/mail-backend-db/mysql/:/var/lib/mysql/
+            - ./config/mail-backend/db/:/docker-entrypoint-initdb.d/
+        networks:
+            default:
+                ipv4_address: 172.2.80.4
      
     mail:
         image: bytemark/smtp
@@ -53,24 +65,25 @@ services:
     # Auth #
     ########
     
-    auth-backend:
-        image: vivaconagua/auth-backend:latest
-        build: ./repos/auth-backend
-        container_name: auth-backend
+    drops-backend:
+        image: vivaconagua/drops-backend:latest
+        build: ./repos/drops-backend
+        container_name: drops-backend
         restart: unless-stopped
         volumes:
             - ./config/auth-backend/config.yml:/go/src/auth-backend/config/config.yml
         networks:
             default:
                 ipv4_address: 172.2.60.5
-    auth-backend-db:
+
+    drops-backend-db:
         image: mysql
-        container_name: auth-db
+        container_name: drops-backend-db
         restart: unless-stopped
-        env_file: ./config/auth-backend/database.env
+        env_file: ./config/drops-backend/database.env
         volumes:
-            - ./volumes/auth-db/mysql/:/var/lib/mysql/
-            - ./repos/auth-backend/config/db/:/docker-entrypoint-initdb.d/
+            - ./volumes/drops-backend-db/mysql/:/var/lib/mysql/
+            - ./config/drops-backend/db/:/docker-entrypoint-initdb.d/
         networks:
             default:
                 ipv4_address: 172.2.80.5
@@ -85,7 +98,17 @@ services:
         networks:
             default:
                 ipv4_address: 172.2.60.6
-
+    
+    
+    dispenser-backend-db:
+        image: mongo
+        container_name: dispenser-backend-db
+        restart: always
+        volumes: 
+            - ./volumes/dispenser-backend-db/mongodb/:/data/db/
+        networks:
+            default:
+                ipv4_address: 172.2.80.7
 
 
 networks:

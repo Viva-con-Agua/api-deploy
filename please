@@ -68,6 +68,9 @@ restart_docker(){
   docker-compose restart $1;
 }
 
+restore_docker(){
+    docker exec -i ${1}-db sh -c 'exec mysql -uroot -pyes auth' < ${2}
+}
 
 ##
 # Print Api help
@@ -92,5 +95,6 @@ case $1 in
   update) update_docker $2;;
   restart) restart_docker $2;;
   reup) reup_docker $2 $3;;
+  restore) restore_docker $2 $3;;
   *) help
 esac

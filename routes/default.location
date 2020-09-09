@@ -3,7 +3,7 @@
 # 2020_07_08             #
 ##########################
 location /auth {
-    proxy_pass http://auth-backend;
+    proxy_pass http://drops-backend;
     proxy_http_version 1.1;
     proxy_set_header   Upgrade $http_upgrade;
     proxy_set_header Connection "upgrade";
