@@ -1,0 +1,12 @@
+db:
+    host: 172.2.80.5
+    user: auth
+    password: auth
+    port: 3306
+    name: auth
+nats:
+    url: nats://172.2.60.2:4222
+redis:
+    url: 172.2.60.3:6379
+mail:
+    host: 172.2.60.4:25

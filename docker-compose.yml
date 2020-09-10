@@ -2,116 +2,42 @@
 version: '3'
 
 services:
-    nginx-api:
+    nginx:
         image: nginx
-        container_name: nginx-api
         restart: unless-stopped
         volumes:
             - ./routes/:/etc/nginx/conf.d/
         networks:
-            default:
+            pool:
                 ipv4_address: 172.2.60.1
-  ################
-  # Architecture #
-  ################
-    nats-api:
+            app:
+    nats:
         image: nats
-        container_name: nats-api
         restart: unless-stopped
         networks:
-            default:
-                ipv4_address: 172.2.60.2
+            app:
+                aliases:
+                    - api.nats
+            db:
 
-    redis-api:
+    redis:
         image: redis
-        container_name: redis-api
         restart: unless-stopped
         networks:
-            default:
-                ipv4_address: 172.2.60.3
-
-    # mail
-    mail-backend:
-        image: vivaconagua/mail-backend:latest
-        build: ./repos/mail-backend
-        container_name: mail-backend
-        restart: unless-stopped
-        volumes:
-            - ./config/mail-backend/config.yml:/go/src/mail-backend/config/config.yml
-        networks:
-            default:
-                ipv4_address: 172.2.60.4
- 
-    mail-backend-db:
-        image: mysql
-        container_name: mail-backend-db
-        restart: unless-stopped
-        env_file: ./config/mail-backend/database.env
-        volumes:
-            - ./volumes/mail-backend-db/mysql/:/var/lib/mysql/
-            - ./config/mail-backend/db/:/docker-entrypoint-initdb.d/
-        networks:
-            default:
-                ipv4_address: 172.2.80.4
-     
-    mail:
-        image: bytemark/smtp
-        restart: always
-        networks:
-            default:
-                ipv4_address: 172.2.59.200
-
-    ########
-    # Auth #
-    ########
-    
-    drops-backend:
-        image: vivaconagua/drops-backend:latest
-        build: ./repos/drops-backend
-        container_name: drops-backend
-        restart: unless-stopped
-        volumes:
-            - ./config/auth-backend/config.yml:/go/src/auth-backend/config/config.yml
-        networks:
-            default:
-                ipv4_address: 172.2.60.5
-
-    drops-backend-db:
-        image: mysql
-        container_name: drops-backend-db
-        restart: unless-stopped
-        env_file: ./config/drops-backend/database.env
-        volumes:
-            - ./volumes/drops-backend-db/mysql/:/var/lib/mysql/
-            - ./config/drops-backend/db/:/docker-entrypoint-initdb.d/
-        networks:
-            default:
-                ipv4_address: 172.2.80.5
-    
-    payment-backend:
-        image: vivaconagua/payment-backend:latest
-        build: ./repos/payment-backend
-        container_name: payment-backend
-        restart: unless-stopped
-        volumes:
-            - ./config/payment-backend/config.yml:/go/src/payment-backend/config/config.yml
-        networks:
-            default:
-                ipv4_address: 172.2.60.6
-    
-    
-    dispenser-backend-db:
-        image: mongo
-        container_name: dispenser-backend-db
-        restart: always
-        volumes: 
-            - ./volumes/dispenser-backend-db/mongodb/:/data/db/
-        networks:
-            default:
-                ipv4_address: 172.2.80.7
-
-
+            app:
+                aliases:
+                    - redis
 networks:
-    default:
+    pool:
         external:
             name: pool-network
+    app:
+        ipam:
+            driver: default
+            config:
+                - subnet: "172.3.0.0/21"
+    db:
+        ipam:
+            driver: default
+            config:
+                - subnet: "172.3.8.0/21"

@@ -7,16 +7,22 @@
 ##
 # Pull a specific repository, update the corresponding docker
 ##
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
 if [ -f ".env" ]; then
     source .env
 else
     branch="develop"
     editor="nvim"
+    workdir="./"
 fi
 
 
+
 install_docker() {
-    cd repos &&
+    cd ${workdir} &&
     git clone -b ${branch} https://github.com/Viva-con-Agua/${1}.git && 
     mkdir -p ../config/${1} &&
     cp -r ${1}/config/* ../config/${1}/
@@ -31,41 +37,97 @@ install_docker() {
         ${editor} config/${1}/config.yml 
     fi
 }
+##
+# Nginx
+##
+nginx_restart() {
+    #restart nginx
+    docker-compose restart nginx-api 
+}
 
-setup_docker() {
-    if docker-compose config --services | grep -q '${1}_db'; then
-        docker-compose up -d --build ${1}-db
-        docker-compose up -d --build ${1}
+nginx_add_upstream() {
+
+
+    echo "" >> routes/default.upstream
+    echo "upstream ${1} {" >> routes/default.upstream
+    echo "  server ${2};" >> routes/default.upstream
+    echo "}" >> routes/default.upstream
+}
+
+nginx_add_subpath() {
+
+    echo -e "${GREEN}START INSERT LOCATION ${NC}"
+    echo "input :q for finish"
+    while true; do
+        read -p "Please input: " path_input
+        echo $path_input
+        if [ "$path_input" == ":q" ] 
+        then
+            echo -e "${GREEN} QUIT INSERT LOCATION${NC}"
+            break
+        else
+            if grep -Fwq "/v1/${path_input}" routes/location.v1
+            then
+                echo -e "${RED}ERROR: ${NC}location already exsists"
+            else
+            
+            echo "" >> routes/location.v1
+            echo "location /v1/${path_input} {" >> routes/location.v1
+            echo "  proxy_pass http://${1};" >> routes/location.v1
+            echo "}" >> routes/location.v1
+            fi
+        fi
+    done
+}
+
+nginx_add_docker(){
+    ## upstream
+    echo -e "${GREEN}### START SCRIPT ###"
+    if grep -Fq "${1}" routes/default.upstream
+    then
+        echo -e "${RED}ERROR: ${NC}service already exsists"
     else
-        docker-compose up -d --build ${1}
+        echo ""
+        echo -e "${GREEN}STEP_1: ${NC} add upstream to config"
+        nginx_add_upstream $1 $2
+        echo -e "${GREEN}STEP_2: ${NC} add location to config"
+        nginx_add_subpath $1 
+        echo -e "${GREEN}STEP_1: ${NC} restart nginx"
     fi
 }
 
-setup_all(){
-    ( setup_one mail-backend || echo "cant reinstall mail-backend" ) &&
-    ( setup_one auth-backend || echo "cant reinstall auth-backend" ) &&
-    ( setup_one payment-backend || echo "cant reinstall payment-backend" ) 
+##
+# Api Docker
+##
+setup_docker() {
+    # change directory to backend-app folder
+    cd ${workdir}/${1} &&
+        # build and run docker
+   docker-compose up -d --build       
+}
 
-}
 update_docker() {
-    cd repos/${1} && 
-    git pull && 
-	cd ../../ && 
-    docker-compose up -d --build $1;
+    # change directory to backend-app folder
+    cd ${workdir}/${1} &&
+    # pull from github
+    git pull &&
+    # build and run docker
+    docker-compose up -d --build
 }
+
 
 ##
 # Remove docker and restart it
 ##
 reup_docker(){
-  docker-compose rm -s $1 && docker-compose up -d $1;
+    docker-compose rm -s $1 && docker-compose up -d $1;
 }
 
 ##
 # Restart docker
 ##
 restart_docker(){
-  docker-compose restart $1;
+    docker-compose restart $1;
 }
 
 restore_docker(){
@@ -82,19 +144,34 @@ help(){
     echo " setup_all                             # setup all services"
     echo " update <serviceName>                  # pull the 'develop' branches, build and setup docker and push docker into 'develop'"
     echo " restart <serviceName>                 # delete and set up service"
-	echo " reup <serviceName>                    # remove and restart docker"
+    echo " reup <serviceName>                    # remove and restart docker"
 }
 
 ##
 # Main
 ##
+command_nginx() {
+    case $1 in
+        service) nginx_add_docker $2 $3;;
+        location) nginx_add_subpath $2 $3;;
+    esac
+}
+
+command_docker() {
+    case $1 in
+        install) install_docker $2 $3;;
+        setup) setup_docker $2;;
+        setup_all) setup_all;;
+        update) update_docker $2;;
+        restart) restart_docker $2;;
+        reup) reup_docker $2 $3;;
+        restore) restore_docker $2 $3;;
+
+        *) help
+    esac
+}
+
 case $1 in
-    install) install_docker $2 $3;;
-  setup) setup_docker $2;;
-  setup_all) setup_all;;
-  update) update_docker $2;;
-  restart) restart_docker $2;;
-  reup) reup_docker $2 $3;;
-  restore) restore_docker $2 $3;;
-  *) help
+    nginx ) command_nginx $2 $3 $4 $5;;
+    docker) command_docker $2 $3 $4;;
 esac

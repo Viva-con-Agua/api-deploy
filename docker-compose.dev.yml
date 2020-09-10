@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+    nats:
+        ports:
+            - '${NATS_PORT}:4222'
+            - '${NATS_UI_PORT}:6222'
+    redis:
+        ports:
+            - '${REDIS_PORT}:6379'
