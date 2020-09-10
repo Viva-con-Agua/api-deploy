@@ -103,7 +103,7 @@ setup_docker() {
     # change directory to backend-app folder
     cd ${workdir}/${1} &&
         # build and run docker
-   docker-compose up -d --build       
+   docker-compose --env-file ./.env up -d --build       
 }
 
 update_docker() {
@@ -112,7 +112,7 @@ update_docker() {
     # pull from github
     git pull &&
     # build and run docker
-    docker-compose up -d --build
+    docker-compose --env-file ./.env up -d --build
 }
 
 
