@@ -8,6 +8,7 @@
 # Pull a specific repository, update the corresponding docker
 ##
 
+dir=$(pwd)
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
@@ -19,7 +20,9 @@ else
     workdir="./"
 fi
 
-
+copy_config() {
+    cp -r ${workdir}${1}/config/${1} ${REPO_CONFIG_PATH}/
+}
 
 install_docker() {
     cd ${workdir} &&
@@ -103,7 +106,7 @@ setup_docker() {
     # change directory to backend-app folder
     cd ${workdir}/${1} &&
         # build and run docker
-   docker-compose --env-file ./.env up -d --build       
+   docker-compose --env-file ${dir}/.env up -d --build       
 }
 
 update_docker() {
@@ -112,7 +115,7 @@ update_docker() {
     # pull from github
     git pull &&
     # build and run docker
-    docker-compose --env-file ./.env up -d --build
+    docker-compose --env-file ${dir}/.env up -d --build
 }
 
 
@@ -174,4 +177,5 @@ command_docker() {
 case $1 in
     nginx ) command_nginx $2 $3 $4 $5;;
     docker) command_docker $2 $3 $4;;
+    copyConfig) copy_config $2;;
 esac

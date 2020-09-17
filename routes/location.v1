@@ -11,3 +11,15 @@ location /v1/run4w {
 location /v1/auth {
   proxy_pass http://drops-backend;
 }
+
+location /v1/profiles {
+  proxy_pass http://profile-backend;
+}
+
+location /v1/moves {
+  proxy_pass http://move-backend;
+}
+
+location /v1/teams {
+  proxy_pass http://team-backend;
+}
