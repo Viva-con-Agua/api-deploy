@@ -21,7 +21,7 @@ else
 fi
 
 copy_config() {
-    cp -r ${workdir}${1}/config/${1} ${REPO_CONFIG_PATH}/
+    cp -r ${workdir}/${1}/config/${1} ${REPO_CONFIG_PATH}/
 }
 
 install_docker() {
@@ -105,6 +105,7 @@ nginx_add_docker(){
 setup_docker() {
     # change directory to backend-app folder
     cd ${workdir}/${1} &&
+		ls &&
         # build and run docker
    docker-compose --env-file ${dir}/.env up -d --build       
 }
@@ -115,7 +116,15 @@ update_docker() {
     # pull from github
     git pull &&
     # build and run docker
-    docker-compose --env-file ${dir}/.env up -d --build
+    docker-compose --env-file ${dir}/.env up -d --build app
+}
+delete_docker() {
+    # change directory to backend-app folder
+    cd ${workdir}/${1} &&
+    # pull from github
+    git pull &&
+    # build and run docker
+    docker-compose --env-file ${dir}/.env rm -s -f
 }
 
 
@@ -124,6 +133,14 @@ update_docker() {
 ##
 reup_docker(){
     docker-compose rm -s $1 && docker-compose up -d $1;
+}
+
+remove_database(){
+	  # change directory to backend-app folder
+    cd ${workdir}/${1} &&
+		ls &&
+        # build and run docker
+   docker-compose --env-file ${dir}/.env rm -s -f db   
 }
 
 ##
@@ -169,12 +186,19 @@ command_docker() {
         restart) restart_docker $2;;
         reup) reup_docker $2 $3;;
         restore) restore_docker $2 $3;;
+				delete ) delete_docker $2;;
 
         *) help
     esac
 }
+command_database() {
+	case $1 in
+		rm) remove_database $2;;
+	esac
+}
 
 case $1 in
+		db) command_database $2 $3 $4;;
     nginx ) command_nginx $2 $3 $4 $5;;
     docker) command_docker $2 $3 $4;;
     copyConfig) copy_config $2;;

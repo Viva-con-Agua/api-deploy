@@ -1,0 +1,12 @@
+
+upstream drops-backend {
+  server drops-backend:1323;
+}
+
+upstream move-backend {
+  server move-backend:1323;
+}
+
+upstream team-backend {
+  server team-backend:1323;
+}

@@ -4,21 +4,14 @@ location /v1/users {
   proxy_pass http://drops-backend;
 }
 
-location /v1/run4w {
-  proxy_pass http://run4w-backend;
-}
-
 location /v1/auth {
   proxy_pass http://drops-backend;
-}
-
-location /v1/profiles {
-  proxy_pass http://profile-backend;
 }
 
 location /v1/moves {
   proxy_pass http://move-backend;
 }
+
 
 location /v1/teams {
   proxy_pass http://team-backend;
