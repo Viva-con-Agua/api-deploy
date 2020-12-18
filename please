@@ -20,32 +20,87 @@ else
     workdir="./"
 fi
 
+
+##
+# INIT
+
+initial_folder() {
+    cd ${dir}/../
+    mkdir -p config repos volumes routes logs
+    cd ${dir}
+}
+
+# initial repo
+initial_api() {
+    initial_folder &&
+    cp default.conf ../routes/default.conf	    
+    docker-compose -p ${prefix} up -d
+}
+
+##
+# INSTALL
+
+install_route() {
+    cp location.conf ../routes/${1}.location &&
+    cp upstream.conf ../routes/${1}.upstream &&
+    cd ../routes &&
+    sed -i s/service/${1}/g ${1}.upstream &&
+    sed -i s/domain/${prefix}_${1}_app_1/g ${1}.upstream &&
+    sed -i s/port/${2}/g ${1}.upstream &&
+    
+    sed -i s/service/${1}/g ${1}.location &&
+    ${editor} ${1}.location &&
+    cd ${dir} 
+}
+
+install_api() {
+    cd ${workdir} &&
+    echo "get repo"	    
+    git clone -q  -b ${branch} https://github.com/Viva-con-Agua/${1}.git
+    echo "copy directory"
+    cp -r ${workdir}/${1}/config/${1} ${REPO_CONFIG_PATH}/${1}
+    cd ${dir}
+    echo "install nginx"
+    install_route ${1} ${2}
+    echo "done!!!"
+}
+
+up_api() {
+    cd ${workdir}/${1} &&
+    docker-compose -p ${prefix}_${1} --env-file ${dir}/.env up -d --build && 
+    echo "done"
+    cd ${dir}
+}
+
+update_api() {
+    cd ${workdir}/${1} &&
+    git pull &&
+    docker-compose -p ${prefix}_${1} --env-file ${dir}/.env up -d --build &&
+    cd ${dir}
+}
+
+
+logs_api() {
+    cd ${workdir}/${1} &&
+    docker-compose -p ${prefix}_${1} --env-file ${dir}/.env logs
+}
+
+
 copy_config() {
     cp -r ${workdir}/${1}/config/${1} ${REPO_CONFIG_PATH}/
 }
 
-install_docker() {
-    cd ${workdir} &&
-    git clone -b ${branch} https://github.com/Viva-con-Agua/${1}.git && 
-    mkdir -p ../config/${1} &&
-    cp -r ${1}/config/* ../config/${1}/
-    cd .. &&
-    ${editor} docker-compose.yml &&
-    ${editor} routes/location.${2} &&
-    ${editor} routes/default.upstream &&
-    if docker-compose config --services | grep -q '${1}_db'; then
-        ${editor} config/${1}/config.yml &&
-        ${editor} config/${1}/database.env
-    else
-        ${editor} config/${1}/config.yml 
-    fi
-}
 ##
 # Nginx
 ##
+
 nginx_restart() {
     #restart nginx
-    docker-compose restart nginx-api 
+    docker-compose -p ${prefix} restart nginx
+}
+
+nginx_logs() {
+    docker-compose -p ${prefix} logs
 }
 
 nginx_add_upstream() {
@@ -172,6 +227,8 @@ help(){
 ##
 command_nginx() {
     case $1 in
+	restart) nginx_restart;;
+	logs) nginx_logs;;
         service) nginx_add_docker $2 $3;;
         location) nginx_add_subpath $2 $3;;
     esac
@@ -198,7 +255,12 @@ command_database() {
 }
 
 case $1 in
-		db) command_database $2 $3 $4;;
+    init) initial_api;;
+    up) up_api $2;;
+    update) update_api $2;;
+    logs) logs_api;;
+    install) install_api $2 $3;;
+    db) command_database $2 $3 $4;;
     nginx ) command_nginx $2 $3 $4 $5;;
     docker) command_docker $2 $3 $4;;
     copyConfig) copy_config $2;;

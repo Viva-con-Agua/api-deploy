@@ -6,38 +6,31 @@ services:
         image: nginx
         restart: unless-stopped
         volumes:
-            - ./routes/:/etc/nginx/conf.d/
+            - ../routes/:/etc/nginx/conf.d/
         networks:
-            pool:
-                ipv4_address: 172.2.60.1
-            app:
+            domain_net:
+            api_net:
     nats:
         image: nats
         restart: unless-stopped
         networks:
-            app:
-                aliases:
-                    - api.nats
-            db:
+            api_net:
+            db_net:
 
     redis:
         image: redis
         restart: unless-stopped
         networks:
-            app:
+            api_net:
                 aliases:
                     - redis
 networks:
-    pool:
+    domain_net:
         external:
-            name: pool-network
-    app:
-        ipam:
-            driver: default
-            config:
-                - subnet: "172.3.0.0/21"
-    db:
-        ipam:
-            driver: default
-            config:
-                - subnet: "172.3.8.0/21"
+            name: domain_net
+    api_net:
+        external:
+            name: api_net
+    db_net:
+        external:
+            name: db_net
