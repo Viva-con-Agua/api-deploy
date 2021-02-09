@@ -43,6 +43,7 @@ services:
         env_file:
             - .env
         links:
+            - nats:nats
             - mail-db:db
             - smtp-relay:smtp
         depends_on:

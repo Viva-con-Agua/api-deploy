@@ -14,6 +14,7 @@ print_help() {
 }
 
 init_dev(){
+    mkdir -p ./config/nginx/dev/conf
     cp ./config/nginx/prod/conf/* ./config/nginx/dev/conf/
 }
 
