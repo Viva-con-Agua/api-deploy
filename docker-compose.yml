@@ -67,6 +67,32 @@ services:
         restart: always
         networks:
             api_net:
+
+    run4w-backend:
+        build: .
+        image: vivaconagua/run4w-backend:latest
+        restart: always
+        env_file:
+            - .env
+        links:
+            - nats:nats
+            - run4w-db:db
+        depends_on:
+            - mail-db
+        env_file:
+            - .env
+        networks:
+            api_net:
+            db_net:
+
+    run4w-db:
+        image: mongo
+        restart: unless-stopped
+        volumes: 
+            - ${VOLUMES}/run4w-db/:/data/db/
+        networks:
+            db_net:
+
   
   
 networks:
