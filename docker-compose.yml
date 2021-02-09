@@ -14,7 +14,7 @@ services:
             api_net:
 
     auth-backend:
-        image: auth-backend:latest
+        image: vivaconagua/auth-backend:latest
         build: .
         restart: always
         env_file: 
@@ -38,7 +38,7 @@ services:
 
     mail-backend:
         build: .
-        image: mail-backend:latest
+        image: vivaconagua/mail-backend:latest
         restart: always
         env_file:
             - .env
