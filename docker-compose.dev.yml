@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+    nginx:
+        volumes:
+            - ./config/nginx/dev/nginx.conf:/etc/nginx/nginx.conf
+            - ./config/nginx/dev/conf/:/etc/nginx/conf.d/
+        ports:
+            - '${NGINX_PORT}:80'
+        environment:
+            - NGINX_DEVIP=${NGINX_DEVIP}  
+    smtp-relay:
+        ports:
+            - ${SMTP_RELAY_PORT}:25
+            - ${SMTP_RELAY_ADMIN_PORT}:80  
+    nats:
+        ports:
+            - '${NATS_PORT}:4222'
+            - '${NATS_UI_PORT}:6222'

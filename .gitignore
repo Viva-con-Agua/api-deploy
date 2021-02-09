@@ -1,3 +1,4 @@
-repos/*
-config/*
-volumes/*
+.env
+
+volumes
+config/nginx/dev/conf/*

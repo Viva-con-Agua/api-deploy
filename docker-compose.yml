@@ -1,94 +1,78 @@
-
-version: '3'
+version: "3"
 
 services:
-    nginx-api:
-        image: nginx
-        container_name: nginx-api
-        restart: unless-stopped
-        volumes:
-            - ./routes/:/etc/nginx/conf.d/
-        networks:
-            default:
-                ipv4_address: 172.2.60.1
-  ################
-  # Architecture #
-  ################
-    nats-api:
-        image: nats
-        container_name: nats-api
-        restart: unless-stopped
-        networks:
-            default:
-                ipv4_address: 172.2.60.2
-
-    redis-api:
-        image: redis
-        container_name: redis-api
-        restart: unless-stopped
-        networks:
-            default:
-                ipv4_address: 172.2.60.3
-
-    # mail
-    mail-backend:
-        image: vivaconagua/mail-backend:latest
-        build: ./repos/mail-backend
-        container_name: mail-backend
-        restart: unless-stopped
-        volumes:
-            - ./config/mail-backend/config.yml:/go/src/mail-backend/config/config.yml
-        networks:
-            default:
-                ipv4_address: 172.2.60.4
-     
-    mail:
-        image: bytemark/smtp
+    nginx:
+        image: nginx:perl
         restart: always
         networks:
-            default:
-                ipv4_address: 172.2.59.200
+            api_net:
 
-    ########
-    # Auth #
-    ########
-    
+    nats:
+        image: nats
+        restart: always
+        networks:
+            api_net:
+
     auth-backend:
-        image: vivaconagua/auth-backend:latest
-        build: ./repos/auth-backend
-        container_name: auth-backend
-        restart: unless-stopped
-        volumes:
-            - ./config/auth-backend/config.yml:/go/src/auth-backend/config/config.yml
+        image: auth-backend:latest
+        build: .
+        restart: always
+        env_file: 
+            - .env
+        links:
+            - auth-db:db
+            - nats:nats
+        depends_on:
+            - auth-db
         networks:
-            default:
-                ipv4_address: 172.2.60.5
-    auth-backend-db:
-        image: mysql
-        container_name: auth-backend-db
+            api_net:
+            db_net:
+
+    auth-db:
+        image: mongo
         restart: unless-stopped
-        env_file: ./config/auth-backend/database.env
-        volumes:
-            - ./volumes/auth-backend-db/mysql/:/var/lib/mysql/
-            - ./repos/auth-backend/config/db/:/docker-entrypoint-initdb.d/
+        volumes: 
+            - ${VOLUMES}/auth-db/:/data/db/
         networks:
-            default:
-                ipv4_address: 172.2.80.5
+            db_net:
+
+    mail-backend:
+        build: .
+        image: mail-backend:latest
+        restart: always
+        env_file:
+            - .env
+        links:
+            - mail-db:db
+            - smtp-relay:smtp
+        depends_on:
+            - mail-db
+        env_file:
+            - .env
+        networks:
+            api_net:
+            db_net:
+
+    mail-db:
+        image: mongo
+        restart: unless-stopped
+        volumes: 
+            - ${VOLUMES}/mail-db/:/data/db/
+        networks:
+            db_net:
     
-    payment-backend:
-        image: vivaconagua/payment-backend:latest
-        build: ./repos/payment-backend
-        container_name: payment-backend
-        restart: unless-stopped
-        volumes:
-            - ./config/payment-backend/config.yml:/go/src/payment-backend/config/config.yml
+    smtp-relay:
+        image: maildev/maildev
+        restart: always
         networks:
-            default:
-                ipv4_address: 172.2.60.6
-
-
-
+            api_net:
+  
+  
 networks:
-    default:
-        external:
-            name: pool-network
+  api_net:
+    external:
+      name: api_net
+  db_net:
+    external:
+      name: db_net
+    

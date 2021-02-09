@@ -1,96 +1,63 @@
 #!/bin/bash
 
-####
-# Deployment scripts for stage
-##
-
-##
-# Pull a specific repository, update the corresponding docker
-##
-if [ -f ".env" ]; then
-    source .env
-else
-    branch="develop"
-    editor="nvim"
-fi
+source .env
 
 
-install_docker() {
-    cd repos &&
-    git clone -b ${branch} https://github.com/Viva-con-Agua/${1}.git && 
-    mkdir -p ../config/${1} &&
-    cp -r ${1}/config/* ../config/${1}/
-    cd .. &&
-    ${editor} docker-compose.yml &&
-    ${editor} routes/location.${2} &&
-    ${editor} routes/default.upstream &&
-    if docker-compose config --services | grep -q '${1}_db'; then
-        ${editor} config/${1}/config.yml &&
-        ${editor} config/${1}/database.env
-    else
-        ${editor} config/${1}/config.yml 
+print_help() {
+    echo "please script for handling the vca api docker"
+    echo "Syntax: please [command] [options] [service/all]"
+    echo "commands:"
+    echo "  copy <service>    Copy a scripts. Helpfull and buggy"
+    echo "  up [dev/prod]     Set up the api. Used DEPLOY_MODE from .env if no option is set"
+    echo "  network           Initial docker network"
+    echo "  initDev           Initial dev nginx"
+}
+
+init_dev(){
+    cp ./config/nginx/prod/conf/* ./config/nginx/dev/conf/
+}
+
+admin() {
+    docker-compose exec auth-backend bash -c 'curl http://localhost:1323/admin/app'
+    docker-compose exec mail-backend bash -c 'curl http://localhost:1323/admin/email/init'
+}
+
+init_network() {
+    docker network create -d bridge --subnet 172.4.8.0/21 domain_net &&
+    docker network create -d bridge --subnet 172.4.16.0/21 db_net &&
+    docker network create -d bridge --subnet 172.4.24.0/21 api_net
+}
+
+copyConfig() {
+    cat ${REPO_PATH}/${1}/config/docker-compose.prod.yml >> docker-compose.api.yml &&
+    cp ${REPO_PATH}/${1}/config/${1}.location ./config/nginx/conf/
+}
+
+print_up(){
+    echo "DEPLOY_MODE not set or not supported. Use .env file or add dev/prod option."
+}
+up() {
+    if [ -z ${1+x} ];
+    then
+        mode=${DEPLOY_MODE}
+    else 
+        mode=${1}
     fi
-}
-
-setup_docker() {
-    if docker-compose config --services | grep -q ${1}-db; then
-        docker-compose up -d --build ${1}-db
-        docker-compose up -d --build ${1}
-    else
-        docker-compose up -d --build ${1}
-    fi
-}
-
-setup_all(){
-    ( setup_docker mail-backend || echo "cant reinstall mail-backend" ) &&
-    ( setup_docker auth-backend || echo "cant reinstall auth-backend" ) &&
-    ( setup_docker payment-backend || echo "cant reinstall payment-backend" ) 
-
-}
-update_docker() {
-    cd repos/${1} && 
-    git pull && 
-	cd ../../ && 
-    docker-compose up -d --build $1;
-}
-
-##
-# Remove docker and restart it
-##
-reup_docker(){
-  docker-compose rm -s $1 && docker-compose up -d $1;
-}
-
-##
-# Restart docker
-##
-restart_docker(){
-  docker-compose restart $1;
+    case ${mode} in
+        dev) docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d;;
+        prod) docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d;;
+        *) print_up
+    esac
 }
 
 
-##
-# Print Api help
-##
-help(){
-    echo "Usage: ./please <command> <serviceName / version>"
-    echo " install <serviceName> <apiVersion>    # install backend docker"
-    echo " setup <serviceName>                   # setup service"
-    echo " setup_all                             # setup all services"
-    echo " update <serviceName>                  # pull the 'develop' branches, build and setup docker and push docker into 'develop'"
-    echo " restart <serviceName>                 # delete and set up service"
-	echo " reup <serviceName>                    # remove and restart docker"
-}
-
-##
-# Main
-##
-case $1 in
-    install) install_docker $2 $3;;
-  setup) setup_docker $2;;
-  setup_all) setup_all;;
-  update) update_docker $2;;
-  restart) restart_docker $2;;
-  reup) reup_docker $2 $3;;
-  *) help
+case $1 in 
+    copy) copyConfig $2;;
+    initNet) init_network ;;
+    initDev) init_dev;;
+    up) up $2 ;;
+    admin) admin;;
+    network) init_network;;
+    help) print_help;;
+    *) print_help
 esac

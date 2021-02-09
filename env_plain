@@ -1,0 +1,57 @@
+##
+# Config file for vivaconagua api services
+
+# Can be set prod for production and dev for develop cases
+DEPLOY_MODE=dev
+
+# Path to your projects 
+REPO_PATH=/home/dls/go/src
+
+#Nginx config
+NGINX_PORT=8000
+NGINX_DEVIP=192.168.178.22
+
+#Nats config
+# NATS_PORT is used in develop mode for forwarding nats to localhost. 
+NATS_PORT=4223
+# NATS_UI_PORT is used in develop mode to forward the nats ui port to localhost
+NATS_UI_PORT=6223
+
+
+# API Service config
+ALLOW_ORIGINS=http://localhost:8080,http://localhost:8000,http://localhost:8081,http://localhost:8082,
+COOKIE_SECURE=false
+SAME_SITE=none
+
+
+
+# SMTP Relay
+RELAY_SMTP_SERVER=
+RELAY_SMTP_USERNAME= 
+RELAY_SMTP_PASSWORD=
+RELAY_SERVER_HOSTNAME=
+
+SMTP_RELAY_PORT=25
+SMTP_RELAY_ADMIN_PORT=1080
+
+DB_HOST=db
+DB_PORT=27017
+
+NATS_HOST=nats
+NATS_PORT=4222
+
+AUTH_HOST=auth-backend
+AUTH_PORT=1323
+
+MAIL_HOST=mail-backend
+MAIL_PORT=1323
+MAIL_SMTP_HOST=smtp
+MAIL_SMTP_PORT=25
+
+
+VOLUMES=./volumes
+APP_NAME=factory
+REDIRECT_URL="http://localhost:8081/#/login"
+LOGOUT_URL="http://localhost:8081/#/logout"
+RESTRICTION=admin
+REGISTER_RESTRICTED=true
