@@ -23,6 +23,7 @@ admin() {
     docker-compose exec mail-backend bash -c 'curl http://localhost:1323/admin/email/init'
 }
 
+
 init_network() {
     docker network create -d bridge --subnet 172.4.8.0/21 domain_net &&
     docker network create -d bridge --subnet 172.4.16.0/21 db_net &&
@@ -37,6 +38,27 @@ copyConfig() {
 print_up(){
     echo "DEPLOY_MODE not set or not supported. Use .env file or add dev/prod option."
 }
+
+switch_dev() {
+    cp ./config/nginx/example/${1}.location ./config/nginx/dev/conf/${1}.location &&
+    docker-compose restart nginx
+}
+
+switch_docker() {
+    cp ./config/nginx/prod/conf/${1}.location ./config/nginx/dev/conf/${1}.location &&
+    docker-compose restart nginx
+}
+
+switch() {
+    case $1 in
+        dev) switch_dev $2;;
+        docker) switch_docker $2;;
+        *)
+    esac
+
+}
+
+
 up() {
     if [ -z ${1+x} ];
     then
@@ -60,5 +82,6 @@ case $1 in
     admin) admin;;
     network) init_network;;
     help) print_help;;
+    switch) switch $2 $3 ;;
     *) print_help
 esac

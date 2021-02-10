@@ -93,6 +93,34 @@ services:
         networks:
             db_net:
 
+    team-backend:
+        image: vivaconagua/team-backend:latest
+        restart: unless-stopped
+        links:
+            - team-db:db
+        env_file:
+            - .env
+        networks:
+            api_net:
+            db_net:
+
+    team-db:
+        image: mysql
+        environment:
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+            - MYSQL_DATABASE=${TEAM_DB_NAME}
+            - MYSQL_USER=${TEAM_DB_USER}
+            - MYSQL_PASSWORD=${TEAM_DB_PASSWORD}
+        env_file:
+            - .env
+        restart: unless-stopped
+        volumes: 
+            - ${VOLUMES}/team-backend/mysql/:/var/lib/mysql/
+            - ./config/team-backend/db/:/docker-entrypoint-initdb.d/
+        networks:
+            db_net:
+
+
   
   
 networks:
