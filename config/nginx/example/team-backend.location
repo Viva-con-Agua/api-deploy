@@ -1,0 +1,4 @@
+
+location /v1/teams {
+    proxy_pass http://${NGINX_DEVIP}:1323;
+}
