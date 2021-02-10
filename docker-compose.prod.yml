@@ -15,7 +15,7 @@ services:
             - SMTP_USERNAME=${RELAY_SMTP_USERNAME}
             - SMTP_PASSWORD=${RELAY_SMTP_PASSWORD}
             - SERVER_HOSTNAME=${RELAY_SERVER_HOSTNAME} 
-            - SMTP_NETWORK=api_net
+            - SMTP_NETWORKS=172.3.24.0/21
         networks:
             api_net:
             
