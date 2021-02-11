@@ -1,0 +1,4 @@
+
+location /v1/payment {
+  proxy_pass http://${NGINX_DEVIP}:1323;
+}

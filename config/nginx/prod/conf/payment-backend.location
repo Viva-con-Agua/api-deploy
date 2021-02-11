@@ -1,0 +1,4 @@
+
+location /v1/payment {
+  proxy_pass http://payment-backend:1323;
+}

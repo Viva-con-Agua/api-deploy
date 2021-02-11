@@ -125,6 +125,16 @@ services:
         networks:
             db_net:
 
+    payment-backend:
+        image: vivaconagua/payment-backend:latest
+        build: .
+        restart: unless-stopped
+        env_file:
+            - .env
+        networks:
+            api_net:
+
+
 
   
   
