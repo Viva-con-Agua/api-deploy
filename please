@@ -41,12 +41,16 @@ print_up(){
 
 switch_dev() {
     cp ./config/nginx/example/${1}.location ./config/nginx/dev/conf/${1}.location &&
+    cp ./config/nginx-admin/example/${1}.location ./config/nginx-admin/dev/conf/${1}.location &&
     docker-compose restart nginx
+    docker-compose restart nginx-admin
 }
 
 switch_docker() {
     cp ./config/nginx/prod/conf/${1}.location ./config/nginx/dev/conf/${1}.location &&
+    cp ./config/nginx-admin/prod/conf/${1}.location ./config/nginx-admin/dev/conf/${1}.location &&
     docker-compose restart nginx
+    docker-compose restart nginx-admin
 }
 
 switch() {
