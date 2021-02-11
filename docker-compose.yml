@@ -6,6 +6,14 @@ services:
         restart: always
         networks:
             api_net:
+    
+    nginx-admin:
+        image: nginx:perl
+        restart: always
+        ports:
+            - 1337:80
+        networks:
+            api_net:
 
     nats:
         image: nats

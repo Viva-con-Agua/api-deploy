@@ -20,7 +20,7 @@ init_dev(){
 
 admin() {
     docker-compose exec auth-backend bash -c 'curl http://localhost:1323/admin/app'
-    docker-compose exec mail-backend bash -c 'curl http://localhost:1323/admin/email/init'
+    cd admin && bash admin.sh init email && cd ..
 }
 
 

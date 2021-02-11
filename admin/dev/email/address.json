@@ -1,0 +1,11 @@
+{
+    "id":"a5d27fce-eec0-4ccc-a4db-503e1d12bf32",
+    "email": "test2@test.de",
+    "password": "asdasdada",
+    "host": "test",
+    "port": 23,
+    "scope": [
+      "default"
+    ]
+}
+

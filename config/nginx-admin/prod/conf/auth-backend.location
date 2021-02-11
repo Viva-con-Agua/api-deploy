@@ -1,0 +1,3 @@
+location /admin/auth {
+  proxy_pass http://auth-backend:1323;
+}

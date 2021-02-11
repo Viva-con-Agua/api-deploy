@@ -2,3 +2,4 @@
 
 volumes
 config/nginx/dev/conf/*
+admin/prod/*

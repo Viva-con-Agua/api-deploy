@@ -1,0 +1,4 @@
+
+location /admin/moves {
+    proxy_pass http://run4w-backend:1323;
+}

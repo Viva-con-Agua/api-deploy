@@ -9,6 +9,13 @@ services:
             - '${NGINX_PORT}:80'
         environment:
             - NGINX_DEVIP=${NGINX_DEVIP}  
+
+    nginx-admin:
+        volumes:
+            - ./config/nginx-admin/dev/nginx.conf:/etc/nginx/nginx.conf
+            - ./config/nginx-admin/dev/conf/:/etc/nginx/conf.d/
+        environment:
+            - NGINX_DEVIP=${NGINX_DEVIP}  
     smtp-relay:
         ports:
             - ${SMTP_RELAY_PORT}:25

@@ -1,0 +1,3 @@
+location /admin/moves {
+  proxy_pass http://${NGINX_DEVIP}:1333;
+}

@@ -8,6 +8,15 @@ services:
             domain_net:
             api_net:
 
+    nginx-admin:
+        volumes:
+            - ./config/nginx-admin/prod/conf/:/etc/nginx/conf.d/
+        networks:
+            domain_net:
+            api_net:
+
+
+
     smtp-relay:
         image: juanluisbaptiste/postfix:alpine
         environment:
