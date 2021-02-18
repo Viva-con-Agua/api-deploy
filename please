@@ -16,6 +16,9 @@ print_help() {
 init_dev(){
     mkdir -p ./config/nginx/dev/conf
     cp ./config/nginx/prod/conf/* ./config/nginx/dev/conf/
+    mkdir -p ./config/nginx-admin/dev/conf
+    cp ./config/nginx-admin/prod/conf/* ./config/nginx-admin/dev/conf/
+    mkdir -p ${BACKUP_PATH}/{auth,run4w}
 }
 
 admin() {
@@ -53,6 +56,11 @@ switch_docker() {
     docker-compose restart nginx-admin
 }
 
+backup() {
+    dt=`date '+%d:%m:%Y_%H:%M'`
+    docker-compose exec auth-db bash -c 'mongodump -d auth --archive' > ${BACKUP_PATH}/auth/auth.backup_${dt}.archive
+}
+
 switch() {
     case $1 in
         dev) switch_dev $2;;
@@ -87,5 +95,6 @@ case $1 in
     network) init_network;;
     help) print_help;;
     switch) switch $2 $3 ;;
+    backup) backup ;;
     *) print_help
 esac
