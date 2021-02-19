@@ -79,8 +79,10 @@ up() {
         mode=${1}
     fi
     case ${mode} in
-        dev) docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d;;
-        prod) docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d;;
+        prod) docker-compose -f docker-compose.prod.yml -f docker-compose.live.yml up -d;;
+        prod-dev) docker-compose -f docker-compose.prod.yml -f docker-compose.dev.yml up -d;;
+        stage) docker-compose -f docker-compose.stage.yml -f docker-compose.live.yml up -d;;
+        stage-dev) docker-compose -f docker-compose.stage.yml -f docker-compose.dev.yml up -d;;
         *) print_up
     esac
 }

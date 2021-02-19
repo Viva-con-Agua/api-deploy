@@ -22,7 +22,7 @@ services:
             api_net:
 
     auth-backend:
-        image: vivaconagua/auth-backend:latest
+        image: vivaconagua/auth-backend:stage
         restart: always
         env_file: 
             - .env
@@ -44,7 +44,7 @@ services:
             db_net:
 
     mail-backend:
-        image: vivaconagua/mail-backend:latest
+        image: vivaconagua/mail-backend:stage
         restart: always
         env_file:
             - .env
@@ -75,7 +75,7 @@ services:
             api_net:
 
     run4w-backend:
-        image: vivaconagua/run4w-backend:latest
+        image: vivaconagua/run4w-backend:stage
         restart: always
         env_file:
             - .env
@@ -99,7 +99,7 @@ services:
             db_net:
 
     team-backend:
-        image: vivaconagua/team-backend:latest
+        image: vivaconagua/team-backend:stage
         restart: unless-stopped
         links:
             - team-db:db
@@ -126,7 +126,7 @@ services:
             db_net:
 
     payment-backend:
-        image: vivaconagua/payment-backend:latest
+        image: vivaconagua/payment-backend:stage
         build: .
         restart: unless-stopped
         env_file:
