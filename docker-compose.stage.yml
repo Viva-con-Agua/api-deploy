@@ -127,7 +127,6 @@ services:
 
     payment-backend:
         image: vivaconagua/payment-backend:stage
-        build: .
         restart: unless-stopped
         env_file:
             - .env

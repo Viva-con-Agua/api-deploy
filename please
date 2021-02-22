@@ -22,13 +22,12 @@ init_dev(){
 }
 
 admin() {
-    docker-compose exec auth-backend bash -c 'curl http://localhost:1323/admin/app'
-    cd admin && bash admin.sh init email && cd ..
+    docker-compose exec auth-backend bash -c 'curl http://localhost:1323/admin/auth/app'
 }
 
 
 init_network() {
-    docker network create -d bridge --subnet 172.4.8.0/21 domain_net &&
+    docker network create -d bridge --subnet 172.4.8.0/21 domain_net ||
     docker network create -d bridge --subnet 172.4.16.0/21 db_net &&
     docker network create -d bridge --subnet 172.4.24.0/21 api_net
 }
