@@ -22,13 +22,12 @@ init_dev(){
 }
 
 admin() {
-    docker-compose exec auth-backend bash -c 'curl http://localhost:1323/admin/app'
-    cd admin && bash admin.sh init email && cd ..
+    docker-compose exec auth-backend bash -c 'curl http://localhost:1323/admin/auth/app'
 }
 
 
 init_network() {
-    docker network create -d bridge --subnet 172.4.8.0/21 domain_net &&
+    docker network create -d bridge --subnet 172.4.8.0/21 domain_net ||
     docker network create -d bridge --subnet 172.4.16.0/21 db_net &&
     docker network create -d bridge --subnet 172.4.24.0/21 api_net
 }
@@ -79,10 +78,29 @@ up() {
         mode=${1}
     fi
     case ${mode} in
-        dev) docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d;;
-        prod) docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d;;
+        prod) docker-compose -f docker-compose.prod.yml -f docker-compose.live.yml up -d;;
+        prod-dev) docker-compose -f docker-compose.prod.yml -f docker-compose.dev.yml up -d;;
+        stage) docker-compose -f docker-compose.stage.yml -f docker-compose.live.yml up -d;;
+        stage-dev) docker-compose -f docker-compose.stage.yml -f docker-compose.dev.yml up -d;;
         *) print_up
     esac
+}
+
+update() {
+    if [ -z ${1+x} ];
+    then
+        mode=${DEPLOY_MODE}
+    else 
+        mode=${1}
+    fi
+    case ${mode} in
+        prod) docker-compose -f docker-compose.prod.yml pull && docker-compose -f docker-compose.prod.yml -f docker-compose.live.yml up -d;;
+        prod-dev)docker-compose -f docker-compose.prod.yml pull &&  docker-compose -f docker-compose.prod.yml -f docker-compose.dev.yml up -d;;
+        stage) docker-compose -f docker-compose.stage.yml pull && docker-compose -f docker-compose.stage.yml -f docker-compose.live.yml up -d;;
+        stage-dev) docker-compose -f docker-compose.stage.yml pull && docker-compose -f docker-compose.stage.yml -f docker-compose.dev.yml up -d;;
+        *) print_up
+    esac
+
 }
 
 
@@ -91,6 +109,7 @@ case $1 in
     initNet) init_network ;;
     initDev) init_dev;;
     up) up $2 ;;
+    update) update $2;;
     admin) admin;;
     network) init_network;;
     help) print_help;;

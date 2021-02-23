@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+    nginx:
+        volumes:
+            - ./config/nginx/prod/conf/:/etc/nginx/conf.d/
+        networks:
+            domain_net:
+                ipv4_address: 172.4.9.1
+            api_net:
+
+    nginx-admin:
+        volumes:
+            - ./config/nginx-admin/prod/conf/:/etc/nginx/conf.d/
+        networks:
+            domain_net:
+            api_net:
+
+
+
+    smtp-relay:
+        image: juanluisbaptiste/postfix:alpine
+        environment:
+            - SMTP_SERVER=${RELAY_SMTP_SERVER}
+            - SMTP_USERNAME=${RELAY_SMTP_USERNAME}
+            - SMTP_PASSWORD=${RELAY_SMTP_PASSWORD}
+            - SERVER_HOSTNAME=${RELAY_SERVER_HOSTNAME} 
+            - SMTP_NETWORKS=172.3.24.0/21
+        networks:
+            api_net:
+            
+
+networks:
+    domain_net:
+        external:
+            name: domain_net
+ 
