@@ -1,4 +1,3 @@
-
 location /admin/moves {
-    proxy_pass http://run4w-backend:1323;
+  proxy_pass http://${NGINX_DEVIP}:1333;
 }
