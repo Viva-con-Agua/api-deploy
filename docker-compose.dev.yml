@@ -24,3 +24,19 @@ services:
         ports:
             - '${NATS_PORT}:4222'
             - '${NATS_UI_PORT}:6222'
+
+    auth-db:
+        ports:
+            - 27017:27017
+
+    mail-db:
+        ports:
+            - 27018:27017
+
+    run4w-db:
+        ports:
+            - 27019:27017
+
+    team-db:
+        ports:
+            - 3306:3306

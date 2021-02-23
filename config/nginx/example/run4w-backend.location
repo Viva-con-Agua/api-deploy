@@ -1,4 +1,4 @@
 
 location /v1/moves {
-  proxy_pass http://${NGINX_DEVIP}:1323;
+  proxy_pass http://${NGINX_DEVIP}:1325;
 }
