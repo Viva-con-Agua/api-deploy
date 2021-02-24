@@ -1,0 +1,4 @@
+
+location /v1/strava {
+    proxy_pass http://run4w-strava:1323;
+}

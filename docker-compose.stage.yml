@@ -144,6 +144,30 @@ services:
             - .env
         networks:
             api_net:
+    
+    run4w-strava:
+        image: vivaconagua/run4w-strava:stage
+        restart: always
+        env_file:
+            - .env
+        links:
+            - nats:nats
+            - run4w-strava-db:db
+        depends_on:
+            - mail-db
+        env_file:
+            - .env
+        networks:
+            api_net:
+            db_net:
+
+    run4w-strava-db:
+        image: mongo
+        restart: unless-stopped
+        volumes: 
+            - ${VOLUMES}/run4w-strava-db/:/data/db/
+        networks:
+            db_net:
 
 
 

@@ -103,6 +103,24 @@ update() {
 
 }
 
+makeProd(){
+    docker tag vivaconagua/auth-backend:latest vivaconagua/auth-backend:latest_bak &&
+    docker tag vivaconagua/mail-backend:latest vivaconagua/mail-backend:latest_bak &&
+    docker tag vivaconagua/run4w-backend:latest vivaconagua/run4w-backend:latest_bak &&
+    docker tag vivaconagua/team-backend:latest vivaconagua/team-backend:latest_bak &&
+    docker tag vivaconagua/payment-backend:latest vivaconagua/payment-backend:latest_bak &&
+    docker tag vivaconagua/auth-backend:stage vivaconagua/auth-backend:latest &&
+    docker tag vivaconagua/mail-backend:stage vivaconagua/mail-backend:latest &&
+    docker tag vivaconagua/run4w-backend:stage vivaconagua/run4w-backend:latest &&
+    docker tag vivaconagua/team-backend:stage vivaconagua/team-backend:latest &&
+    docker tag vivaconagua/payment-backend:stage vivaconagua/payment-backend:latest &&
+    docker push vivaconagua/auth-backend:latest &&
+    docker push vivaconagua/mail-backend:latest &&
+    docker push vivaconagua/run4w-backend:latest &&
+    docker push vivaconagua/team-backend:latest &&
+    docker push vivaconagua/payment-backend:latest 
+}
+
 
 case $1 in 
     copy) copyConfig $2;;
@@ -115,5 +133,6 @@ case $1 in
     help) print_help;;
     switch) switch $2 $3 ;;
     backup) backup ;;
+    makeProd) makeProd ;;
     *) print_help
 esac
