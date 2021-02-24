@@ -10,6 +10,7 @@ services:
             - run4w-backend:run4w-backend
             - team-backend:team-backend
             - payment-backend:payment-backend
+            - run4w-strava:run4w-strava
         networks:
             api_net:
     
