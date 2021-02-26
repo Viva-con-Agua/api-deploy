@@ -4,12 +4,24 @@ services:
     nginx:
         image: nginx:perl
         restart: always
+        links:
+            - auth-backend:auth-backend
+            - mail-backend:mail-backend
+            - run4w-backend:run4w-backend
+            - team-backend:team-backend
+            - payment-backend:payment-backend
         networks:
             api_net:
     
     nginx-admin:
         image: nginx:perl
         restart: always
+        links:
+            - auth-backend:auth-backend
+            - mail-backend:mail-backend
+            - run4w-backend:run4w-backend
+            - team-backend:team-backend
+            - payment-backend:payment-backend
         ports:
             - 1337:80
         networks:
