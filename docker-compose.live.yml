@@ -6,7 +6,7 @@ services:
             - ./config/nginx/prod/conf/:/etc/nginx/conf.d/
         networks:
             domain_net:
-                ipv4_address: 172.4.9.1
+                ipv4_address: ${NGINX_LIVE_IP}
             api_net:
 
     nginx-admin:
