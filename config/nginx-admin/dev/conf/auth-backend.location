@@ -1,3 +1,0 @@
-location /admin/auth {
-  proxy_pass http://${NGINX_DEVIP}:1323;
-}

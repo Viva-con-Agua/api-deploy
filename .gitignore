@@ -1,5 +1,4 @@
 .env
-
 volumes
 config/nginx/dev/conf/*
 config/nginx-admin/dev/conf/*
