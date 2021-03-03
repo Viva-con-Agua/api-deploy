@@ -109,16 +109,22 @@ makeProd(){
     docker tag vivaconagua/run4w-backend:latest vivaconagua/run4w-backend:latest_bak &&
     docker tag vivaconagua/team-backend:latest vivaconagua/team-backend:latest_bak &&
     docker tag vivaconagua/payment-backend:latest vivaconagua/payment-backend:latest_bak &&
+    docker tag vivaconagua/run4w-strava:latest vivaconagua/run4w-strava:latest_bak 
+    docker tag vivaconagua/avatar-backend:latest vivaconagua/avatar-backend:latest_bak 
     docker tag vivaconagua/auth-backend:stage vivaconagua/auth-backend:latest &&
     docker tag vivaconagua/mail-backend:stage vivaconagua/mail-backend:latest &&
     docker tag vivaconagua/run4w-backend:stage vivaconagua/run4w-backend:latest &&
     docker tag vivaconagua/team-backend:stage vivaconagua/team-backend:latest &&
     docker tag vivaconagua/payment-backend:stage vivaconagua/payment-backend:latest &&
+     docker tag vivaconagua/run4w-strava:stage vivaconagua/run4w-strava:latest
+    docker tag vivaconagua/avatar-backend:stage vivaconagua/avatar-backend:latest
     docker push vivaconagua/auth-backend:latest &&
     docker push vivaconagua/mail-backend:latest &&
     docker push vivaconagua/run4w-backend:latest &&
-    docker push vivaconagua/team-backend:latest &&
-    docker push vivaconagua/payment-backend:latest 
+     docker push vivaconagua/team-backend:latest &&
+    docker push vivaconagua/payment-backend:latest &&
+     docker push vivaconagua/run4w-strava:latest &&
+    docker push vivaconagua/avatar-backend:latest 
 }
 
 
