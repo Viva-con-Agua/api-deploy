@@ -173,7 +173,7 @@ services:
             db_net:
 
     avatar-backend:
-        image: vivaconagua/avatar-strava:latest
+        image: vivaconagua/avatar-backend:latest
         restart: always
         env_file:
             - .env
