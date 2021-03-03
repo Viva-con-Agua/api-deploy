@@ -1,0 +1,4 @@
+
+location /v1/email {
+  proxy_pass http://avatar-backend:1323;
+}
