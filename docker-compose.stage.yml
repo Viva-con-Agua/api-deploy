@@ -11,6 +11,7 @@ services:
             - team-backend:team-backend
             - payment-backend:payment-backend
             - run4w-strava:run4w-strava
+            - avatar-backend:avatar-backend
         networks:
             api_net:
     
@@ -156,8 +157,6 @@ services:
             - run4w-strava-db:db
         depends_on:
             - mail-db
-        env_file:
-            - .env
         networks:
             api_net:
             db_net:
@@ -167,6 +166,28 @@ services:
         restart: unless-stopped
         volumes: 
             - ${VOLUMES}/run4w-strava-db/:/data/db/
+        networks:
+            db_net:
+
+    avatar-backend:
+        image: vivaconagua/avatar-backend:stage
+        restart: always
+        env_file:
+            - .env
+        links:
+            - nats:nats
+            - avatar-db:db
+        env_file:
+            - .env
+        networks:
+            api_net:
+            db_net:
+
+    avatar-db:
+        image: mongo
+        restart: unless-stopped
+        volumes: 
+            - ${VOLUMES}/avatar-db/:/data/db/
         networks:
             db_net:
 

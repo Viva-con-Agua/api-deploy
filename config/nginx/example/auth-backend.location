@@ -1,4 +1,6 @@
-
+location /v1/profiles {
+  proxy_pass http://${NGINX_DEVIP}:1323;
+}
 location /v1/apps {
   proxy_pass http://${NGINX_DEVIP}:1323;
 }
