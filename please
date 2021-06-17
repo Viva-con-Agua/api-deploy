@@ -18,7 +18,7 @@ init_dev(){
     cp ./config/nginx/prod/conf/* ./config/nginx/dev/conf/
     mkdir -p ./config/nginx-admin/dev/conf
     cp ./config/nginx-admin/prod/conf/* ./config/nginx-admin/dev/conf/
-    mkdir -p ${BACKUP_PATH}/{auth,run4w}
+    #mkdir -p ${BACKUP_PATH}/{auth,run4w}
 }
 
 admin() {
@@ -38,7 +38,7 @@ copyConfig() {
 }
 
 print_up(){
-    echo "DEPLOY_MODE not set or not supported. Use .env file or add dev/prod option."
+    echo "DEPLOY_MODE not set or not supported. Supported: stage, prod, stage-dev, prod-dev."
 }
 
 switch_dev() {
@@ -65,6 +65,23 @@ switch() {
         dev) switch_dev $2;;
         docker) switch_docker $2;;
         *)
+    esac
+
+}
+
+restart() {
+    if [ -z ${DEPLOY_MODE} ];
+    then
+        echo "Please set DEPLOY_MODE in your .env file."
+    else 
+        mode=${DEPLOY_MODE}
+    fi
+    case ${mode} in
+        prod) docker-compose -f docker-compose.prod.yml -f docker-compose.live.yml restart $1 ;;
+        prod-dev) docker-compose -f docker-compose.prod.yml -f docker-compose.dev.yml restart $1;;
+        stage) docker-compose -f docker-compose.stage.yml -f docker-compose.live.yml restart $1;;
+        stage-dev) docker-compose -f docker-compose.stage.yml -f docker-compose.dev.yml restart $1;;
+        *) print_up
     esac
 
 }
@@ -140,5 +157,6 @@ case $1 in
     switch) switch $2 $3 ;;
     backup) backup ;;
     makeProd) makeProd ;;
+    restart) restart $2;;
     *) print_help
 esac

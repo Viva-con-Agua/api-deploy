@@ -190,6 +190,30 @@ services:
             - ${VOLUMES}/avatar-db/:/data/db/
         networks:
             db_net:
+    
+    donation-backend:
+        image: vivaconagua/donation-backend:stage
+        restart: always
+        env_file:
+            - .env
+        links:
+            - nats:nats
+            - donation-db:db
+        env_file:
+            - .env
+        networks:
+            api_net:
+            db_net:
+
+    donation-db:
+        image: mongo
+        restart: unless-stopped
+        volumes: 
+            - ${VOLUMES}/donation-db/:/data/db/
+        networks:
+            db_net:
+
+
 
 
 

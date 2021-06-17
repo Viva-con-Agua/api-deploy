@@ -1,0 +1,4 @@
+
+location /v1/donations {
+    proxy_pass http://${NGINX_DEVIP}:1329;
+}
