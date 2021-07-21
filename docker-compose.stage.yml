@@ -12,6 +12,8 @@ services:
             - payment-backend:payment-backend
             - run4w-strava:run4w-strava
             - avatar-backend:avatar-backend
+            - donation-backend:donation-backend
+            - newsletter-backend:newsletter-backend
         networks:
             api_net:
     
@@ -212,6 +214,21 @@ services:
             - ${VOLUMES}/donation-db/:/data/db/
         networks:
             db_net:
+
+    newsletter-backend:
+        image: vivaconagua/newsletter-backend:stage
+        restart: always
+        env_file:
+            - .env
+        links:
+            - nats:nats
+        env_file:
+            - .env
+        networks:
+            api_net:
+            db_net:
+
+
 
 
 
