@@ -40,7 +40,10 @@ services:
     run4w-strava-db:
         ports:
             - 27020:27017
-
+    
+    donation-db: 
+        ports:
+            - 27021:27017
     team-db:
         ports:
             - 3306:3306

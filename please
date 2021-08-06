@@ -18,7 +18,7 @@ init_dev(){
     cp ./config/nginx/prod/conf/* ./config/nginx/dev/conf/
     mkdir -p ./config/nginx-admin/dev/conf
     cp ./config/nginx-admin/prod/conf/* ./config/nginx-admin/dev/conf/
-    mkdir -p ${BACKUP_PATH}/{auth,run4w}
+    #mkdir -p ${BACKUP_PATH}/{auth,run4w}
 }
 
 admin() {
@@ -38,7 +38,7 @@ copyConfig() {
 }
 
 print_up(){
-    echo "DEPLOY_MODE not set or not supported. Use .env file or add dev/prod option."
+    echo "DEPLOY_MODE not set or not supported. Supported: stage, prod, stage-dev, prod-dev."
 }
 
 switch_dev() {
@@ -65,6 +65,23 @@ switch() {
         dev) switch_dev $2;;
         docker) switch_docker $2;;
         *)
+    esac
+
+}
+
+restart() {
+    if [ -z ${DEPLOY_MODE} ];
+    then
+        echo "Please set DEPLOY_MODE in your .env file."
+    else 
+        mode=${DEPLOY_MODE}
+    fi
+    case ${mode} in
+        prod) docker-compose -f docker-compose.prod.yml -f docker-compose.live.yml restart $1 ;;
+        prod-dev) docker-compose -f docker-compose.prod.yml -f docker-compose.dev.yml restart $1;;
+        stage) docker-compose -f docker-compose.stage.yml -f docker-compose.live.yml restart $1;;
+        stage-dev) docker-compose -f docker-compose.stage.yml -f docker-compose.dev.yml restart $1;;
+        *) print_up
     esac
 
 }
@@ -109,16 +126,22 @@ makeProd(){
     docker tag vivaconagua/run4w-backend:latest vivaconagua/run4w-backend:latest_bak &&
     docker tag vivaconagua/team-backend:latest vivaconagua/team-backend:latest_bak &&
     docker tag vivaconagua/payment-backend:latest vivaconagua/payment-backend:latest_bak &&
+    docker tag vivaconagua/run4w-strava:latest vivaconagua/run4w-strava:latest_bak 
+    docker tag vivaconagua/avatar-backend:latest vivaconagua/avatar-backend:latest_bak 
     docker tag vivaconagua/auth-backend:stage vivaconagua/auth-backend:latest &&
     docker tag vivaconagua/mail-backend:stage vivaconagua/mail-backend:latest &&
     docker tag vivaconagua/run4w-backend:stage vivaconagua/run4w-backend:latest &&
     docker tag vivaconagua/team-backend:stage vivaconagua/team-backend:latest &&
     docker tag vivaconagua/payment-backend:stage vivaconagua/payment-backend:latest &&
+     docker tag vivaconagua/run4w-strava:stage vivaconagua/run4w-strava:latest
+    docker tag vivaconagua/avatar-backend:stage vivaconagua/avatar-backend:latest
     docker push vivaconagua/auth-backend:latest &&
     docker push vivaconagua/mail-backend:latest &&
     docker push vivaconagua/run4w-backend:latest &&
-    docker push vivaconagua/team-backend:latest &&
-    docker push vivaconagua/payment-backend:latest 
+     docker push vivaconagua/team-backend:latest &&
+    docker push vivaconagua/payment-backend:latest &&
+     docker push vivaconagua/run4w-strava:latest &&
+    docker push vivaconagua/avatar-backend:latest 
 }
 
 
@@ -134,5 +157,6 @@ case $1 in
     switch) switch $2 $3 ;;
     backup) backup ;;
     makeProd) makeProd ;;
+    restart) restart $2;;
     *) print_help
 esac

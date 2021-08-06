@@ -1,0 +1,4 @@
+
+location /v1/donations {
+    proxy_pass http://donation-backend:1323;
+}
