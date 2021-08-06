@@ -197,7 +197,7 @@ services:
             db_net:
   
     donation-backend:
-        image: vivaconagua/donation-backend:stage
+        image: vivaconagua/donation-backend:latest
         restart: always
         env_file:
             - .env
@@ -219,7 +219,7 @@ services:
             db_net:
 
     newsletter-backend:
-        image: vivaconagua/newsletter-backend:stage
+        image: vivaconagua/newsletter-backend:latest
         restart: always
         env_file:
             - .env
