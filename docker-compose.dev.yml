@@ -9,13 +9,21 @@ services:
             - '${NGINX_PORT}:80'
         environment:
             - NGINX_DEVIP=${NGINX_DEVIP}  
+        networks:
+            domain_net:
+                ipv4_address: ${NGINX_LIVE_IP}
+            api_net:
 
     nginx-admin:
         volumes:
             - ./config/nginx-admin/dev/nginx.conf:/etc/nginx/nginx.conf
             - ./config/nginx-admin/dev/conf/:/etc/nginx/conf.d/
         environment:
-            - NGINX_DEVIP=${NGINX_DEVIP}  
+            - NGINX_DEVIP=${NGINX_DEVIP} 
+        networks:
+            domain_net:
+            api_net:
+ 
     smtp-relay:
         ports:
             - ${SMTP_RELAY_PORT}:25
@@ -47,3 +55,9 @@ services:
     team-db:
         ports:
             - 3306:3306
+
+networks:
+    domain_net:
+        external:
+            name: domain_net
+ 
