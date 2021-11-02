@@ -1,0 +1,4 @@
+
+location /v1/social11 {
+    proxy_pass http://social11-backend:1323;
+}
