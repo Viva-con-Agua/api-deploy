@@ -43,7 +43,7 @@ services:
             api_net:
 
     auth-backend:
-        image: vivaconagua/auth-backend:stage
+        image: vivaconagua/auth-backend:{version}
         restart: always
         env_file: 
             - .env
@@ -65,7 +65,7 @@ services:
             db_net:
 
     mail-backend:
-        image: vivaconagua/mail-backend:stage
+        image: vivaconagua/mail-backend:{version}
         restart: always
         env_file:
             - .env
@@ -96,7 +96,7 @@ services:
             api_net:
 
     run4w-backend:
-        image: vivaconagua/run4w-backend:stage
+        image: vivaconagua/run4w-backend:{version}
         restart: always
         env_file:
             - .env
@@ -120,7 +120,7 @@ services:
             db_net:
 
     team-backend:
-        image: vivaconagua/team-backend:stage
+        image: vivaconagua/team-backend:{version}
         restart: unless-stopped
         links:
             - team-db:db
@@ -147,7 +147,7 @@ services:
             db_net:
 
     payment-backend:
-        image: vivaconagua/payment-backend:stage
+        image: vivaconagua/payment-backend:{version}
         restart: unless-stopped
         env_file:
             - .env
@@ -155,7 +155,7 @@ services:
             api_net:
     
     run4w-strava:
-        image: vivaconagua/run4w-strava:stage
+        image: vivaconagua/run4w-strava:{version}
         restart: always
         env_file:
             - .env
@@ -177,7 +177,7 @@ services:
             db_net:
 
     avatar-backend:
-        image: vivaconagua/avatar-backend:stage
+        image: vivaconagua/avatar-backend:{version}
         restart: always
         env_file:
             - .env
@@ -199,7 +199,7 @@ services:
             db_net:
     
     donation-backend:
-        image: vivaconagua/donation-backend:stage
+        image: vivaconagua/donation-backend:{version}
         restart: always
         env_file:
             - .env
@@ -221,7 +221,7 @@ services:
             db_net:
 
     newsletter-backend:
-        image: vivaconagua/newsletter-backend:stage
+        image: vivaconagua/newsletter-backend:{version}
         restart: always
         env_file:
             - .env
@@ -235,7 +235,7 @@ services:
 
     social11-backend:
         build: .
-        image: vivaconagua/social11-backend:stage
+        image: vivaconagua/social11-backend:{version}
         restart: unless-stopped
         env_file:
             - .env
@@ -250,6 +250,27 @@ services:
         restart: unless-stopped
         volumes: 
             - ${VOLUMES}/social11-db/:/data/db/
+        networks:
+            db_net:
+
+    membership-backend:
+        build: .
+        image: vivaconagua/membership-backend:{version}
+        restart: unless-stopped
+        env_file:
+            - .env
+        links:
+            - nats:nats
+            - membership-db:db
+        networks:
+            api_net:
+            db_net:
+   
+    membership-db:
+        image: mongo
+        restart: unless-stopped
+        volumes: 
+            - ${VOLUMES}/membership-db/:/data/db/
         networks:
             db_net:
 
