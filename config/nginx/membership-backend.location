@@ -1,0 +1,4 @@
+
+location /v1/membership {
+    proxy_pass http://membership-backend:1323;
+}
