@@ -1,0 +1,4 @@
+
+location /v1/donation-events {
+  proxy_pass http://donation-feed-backend:1323;
+}

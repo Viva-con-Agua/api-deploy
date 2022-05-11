@@ -15,6 +15,7 @@ services:
             - donation-backend:donation-backend
             - newsletter-backend:newsletter-backend
             - social11-backend:social11-backend  
+            - donation-feed-backend:donation-feed-backend  
         volumes:
             - ./config/nginx:/etc/nginx/conf.d/
         networks:
@@ -271,6 +272,27 @@ services:
         restart: unless-stopped
         volumes: 
             - ${VOLUMES}/membership-db/:/data/db/
+        networks:
+            db_net:
+
+   donation-feed-backend:
+        build: .
+        image: vivaconagua/donation-feed-backend:${version}
+        restart: unless-stopped
+        env_file:
+            - .env
+        links:
+            - nats:nats
+            - donation-feed-db:db
+        networks:
+            api_net:
+            db_net:
+   
+    donation-feed-db:
+        image: mongo
+        restart: unless-stopped
+        volumes: 
+            - ${VOLUMES}/donation-feed-db/:/data/db/
         networks:
             db_net:
 
