@@ -16,6 +16,7 @@ services:
             - newsletter-backend:newsletter-backend
             - social11-backend:social11-backend  
             - donation-feed-backend:donation-feed-backend
+            - play4water-backend:play4water-backend  
         volumes:
             - ./config/nginx:/etc/nginx/conf.d/
         networks:
@@ -295,6 +296,17 @@ services:
             - ${VOLUMES}/donation-feed-db/:/data/db/
         networks:
             db_net:
+
+    play4water-backend:
+        build: .
+        image: vivaconagua/play4water-backend:${version}
+        restart: unless-stopped
+        env_file:
+            - .env
+        links:
+            - nats:nats
+        networks:
+            api_net:
 
   
 networks:
