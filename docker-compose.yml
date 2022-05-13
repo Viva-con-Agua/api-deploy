@@ -15,7 +15,7 @@ services:
             - donation-backend:donation-backend
             - newsletter-backend:newsletter-backend
             - social11-backend:social11-backend  
-            - donation-feed-backend:donation-feed-backend  
+            - donation-feed-backend:donation-feed-backend
         volumes:
             - ./config/nginx:/etc/nginx/conf.d/
         networks:
@@ -275,7 +275,7 @@ services:
         networks:
             db_net:
 
-   donation-feed-backend:
+    donation-feed-backend:
         build: .
         image: vivaconagua/donation-feed-backend:${version}
         restart: unless-stopped
