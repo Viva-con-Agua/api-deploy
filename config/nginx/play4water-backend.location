@@ -1,0 +1,4 @@
+
+location /v1/p4w {
+ 	proxy_pass http://play4water-backend:1323;
+}
